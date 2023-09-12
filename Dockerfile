@@ -1,4 +1,4 @@
-FROM openjdk:16-slim
+FROM bitnami/java:1.8.382-6-debian-11-r54
 
 # Lifted from: https://github.com/joshuarobinson/presto-on-k8s/blob/1c91f0b97c3b7b58bdcdec5ad6697b42e50d74c7/hive_metastore/Dockerfile
 

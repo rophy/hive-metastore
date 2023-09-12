@@ -33,6 +33,7 @@ services:
       - AWS_SECRET_ACCESS_KEY
 
   app:
+    image: hive-metastore
     build: .
     depends_on:
       postgres:
