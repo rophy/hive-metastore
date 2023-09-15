@@ -25,38 +25,31 @@ RUN \
   echo "Install OS dependencies" && \
     build_deps="curl" && \
     apt-get update -y && \
-    apt-get install -y $build_deps --no-install-recommends
-RUN \
+    apt-get install -y $build_deps --no-install-recommends && \
   echo "Download and extract the Hadoop binary package" && \
     curl https://archive.apache.org/dist/hadoop/core/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz \
-    | tar xvz -C /opt/ && \
+    | tar xz -C /opt/ && \
     ln -s /opt/hadoop-$HADOOP_VERSION /opt/hadoop && \
     rm -r /opt/hadoop/share/doc && \
   echo "Add S3a jars to the classpath using this hack" && \
     ln -s /opt/hadoop/share/hadoop/tools/lib/hadoop-aws* /opt/hadoop/share/hadoop/common/lib/ && \
-    ln -s /opt/hadoop/share/hadoop/tools/lib/aws-java-sdk* /opt/hadoop/share/hadoop/common/lib/
-RUN \
+    ln -s /opt/hadoop/share/hadoop/tools/lib/aws-java-sdk* /opt/hadoop/share/hadoop/common/lib/ && \
   echo "Download and install the standalone metastore binary" && \
     curl https://downloads.apache.org/hive/hive-standalone-metastore-$HIVE_METASTORE_VERSION/hive-standalone-metastore-$HIVE_METASTORE_VERSION-bin.tar.gz \
-    | tar xvz -C /opt/ && \
-    ln -s /opt/apache-hive-metastore-$HIVE_METASTORE_VERSION-bin /opt/hive-metastore
-RUN \
+    | tar xz -C /opt/ && \
+    ln -s /opt/apache-hive-metastore-$HIVE_METASTORE_VERSION-bin /opt/hive-metastore && \
   echo "Fix 'java.lang.NoSuchMethodError: com.google.common.base.Preconditions.checkArgument'" && \
   echo "Keep this until this lands: https://issues.apache.org/jira/browse/HIVE-22915" && \
     rm /opt/apache-hive-metastore-$HIVE_METASTORE_VERSION-bin/lib/guava-19.0.jar && \
-    cp /opt/hadoop-$HADOOP_VERSION/share/hadoop/hdfs/lib/guava-27.0-jre.jar /opt/apache-hive-metastore-$HIVE_METASTORE_VERSION-bin/lib/
-RUN \
+    cp /opt/hadoop-$HADOOP_VERSION/share/hadoop/hdfs/lib/guava-27.0-jre.jar /opt/apache-hive-metastore-$HIVE_METASTORE_VERSION-bin/lib/ && \
   echo "Download and install the database connector" && \
     curl -L https://jdbc.postgresql.org/download/postgresql-$POSTGRES_CONNECTOR_VERSION.jar --output /opt/postgresql-$POSTGRES_CONNECTOR_VERSION.jar && \
     ln -s /opt/postgresql-$POSTGRES_CONNECTOR_VERSION.jar /opt/hadoop/share/hadoop/common/lib/ && \
-    ln -s /opt/postgresql-$POSTGRES_CONNECTOR_VERSION.jar /opt/hive-metastore/lib/
-RUN \
+    ln -s /opt/postgresql-$POSTGRES_CONNECTOR_VERSION.jar /opt/hive-metastore/lib/ && \
   echo "Purge build artifacts" && \
     apt-get purge -y --auto-remove $build_deps && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN \
+    rm -rf /var/lib/apt/lists/* && \
   rm -f /opt/apache-hive-metastore-3.0.0-bin/lib/jackson-databind-2.9.4.jar && \
   rm -f /opt/hadoop-3.3.6/share/hadoop/yarn/timelineservice/lib/htrace-core-3.1.0-incubating.jar && \
   rm -f /opt/apache-hive-metastore-3.0.0-bin/lib/log4j-*-2.8.2.jar
