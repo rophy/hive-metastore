@@ -33,7 +33,7 @@ services:
       - AWS_SECRET_ACCESS_KEY
 
   app:
-    image: hive-metastore
+    image: rophy/hive-metastore:3.0.0-20230916-r1
     build: .
     depends_on:
       postgres:

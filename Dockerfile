@@ -46,13 +46,20 @@ RUN \
     curl -L https://jdbc.postgresql.org/download/postgresql-$POSTGRES_CONNECTOR_VERSION.jar --output /opt/postgresql-$POSTGRES_CONNECTOR_VERSION.jar && \
     ln -s /opt/postgresql-$POSTGRES_CONNECTOR_VERSION.jar /opt/hadoop/share/hadoop/common/lib/ && \
     ln -s /opt/postgresql-$POSTGRES_CONNECTOR_VERSION.jar /opt/hive-metastore/lib/ && \
+  echo "Remove or replace packages with critical CVEs" && \
+    rm -f /opt/apache-hive-metastore-3.0.0-bin/lib/jackson-databind-2.9.4.jar && \
+    rm -f /opt/hadoop-3.3.6/share/hadoop/yarn/timelineservice/lib/htrace-core-3.1.0-incubating.jar && \
+    rm -f /opt/apache-hive-metastore-3.0.0-bin/lib/log4j-*-2.8.2.jar && \
+    rm -f /opt/hadoop-3.3.6/share/hadoop/common/lib/slf4j-reload4j-1.7.36.jar && \
+    curl -L https://dlcdn.apache.org/logging/log4j/2.20.0/apache-log4j-2.20.0-bin.tar.gz | tar xz -C /tmp/ && \
+    cp /tmp/apache-log4j-2.20.0-bin/log4j-1.2-api-2.20.0.jar /opt/hive-metastore/lib/ && \
+    cp /tmp/apache-log4j-2.20.0-bin/log4j-api-2.20.0.jar /opt/hive-metastore/lib/ && \
+    cp /tmp/apache-log4j-2.20.0-bin/log4j-core-2.20.0.jar /opt/hive-metastore/lib/ && \
+    cp /tmp/apache-log4j-2.20.0-bin/log4j-slf4j-impl-2.20.0.jar /opt/hive-metastore/lib/ && \
   echo "Purge build artifacts" && \
-    apt-get purge -y --auto-remove $build_deps && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-  rm -f /opt/apache-hive-metastore-3.0.0-bin/lib/jackson-databind-2.9.4.jar && \
-  rm -f /opt/hadoop-3.3.6/share/hadoop/yarn/timelineservice/lib/htrace-core-3.1.0-incubating.jar && \
-  rm -f /opt/apache-hive-metastore-3.0.0-bin/lib/log4j-*-2.8.2.jar
+    rm -rf /var/lib/apt/lists/*
+
 COPY run.sh run.sh
 
 CMD [ "./run.sh" ]
